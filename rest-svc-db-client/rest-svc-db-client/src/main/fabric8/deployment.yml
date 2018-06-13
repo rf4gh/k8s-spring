@@ -1,0 +1,26 @@
+# fabric8-maven-plugin resource fragment to add environment variable with pod name / id:
+spec:
+  template:
+    spec:
+      containers:
+        - env:
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                apiVersion: v1
+                fieldPath: metadata.namespace
+#spec:
+#  template:
+#    spec:
+#      containers:
+#          env:
+#            - name: KUBERNETES_NAMESPACE
+#              valueFrom:
+#                fieldRef:
+#                  apiVersion: v1
+#                  fieldPath: metadata.namespace

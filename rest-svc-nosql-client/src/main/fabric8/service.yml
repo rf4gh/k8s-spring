@@ -1,0 +1,9 @@
+# resource fragment for creation of NodePort service instread of ClusterIP
+# You can call the service from the computer running minikube with http://<IP of k8s dashboard>:<auto-gen port no>
+# liveness/readiness probe URI must still use the non-service port (i.e. 8080)
+spec:
+  type: NodePort
+  ports:
+  - port: 82
+    protocol: TCP
+    targetPort: http2

@@ -1,0 +1,59 @@
+# Fabric8 resource fragment 
+# http://maven.fabric8.io/#resource-fragments
+#
+# we want to specify env vars pointing to the SBA server + the liveness/readiness probe URI's for K8s
+spec:
+# Not working: replicas
+  replicas: 1
+  template:
+    spec:
+      containers:
+#        - args:
+#              - "--spring.boot.admin.client.enabled=false"
+        - env:
+            - name: SPRING_DATA_MONGODB_HOST
+              value: mgo-sakila-service
+#              value: 172.17.0.3
+#              value: mgo-sakila.demo.svc.cluster.local
+            - name: SPRING_DATA_MONGODB_PORT
+              value: 27017
+#              value: 32017
+            - name: SPRING_DATA_MONGODB_DATABASE
+              value: sakiladb
+            - name: SPRING_DATA_MONGODB_USERNAME
+              value: root
+            - name: SPRING_DATA_MONGODB_PASSWORD
+              value: FQfUz6y1udr8SBew
+            - name: SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE
+              value: admin
+            - name: SERVER_PORT
+              value: ${servicePort}
+            - name: SPRING_BOOT_ADMIN_CLIENT_ENABLED
+              value: true
+            - name: SPRING_BOOT_ADMIN_CLIENT_URL
+              value: http://spring-boot-admin-server.demo.svc.cluster.local:8989
+            - name: SPRING_BOOT_ADMIN_CLIENT_INSTANCE_PREFER-IP
+              value: true
+            - name: SPRING_BOOT_ADMIN_CLIENT_INSTANCE_METADATA_RUNS_ON_K8S_POD
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+#  specify the named port to use in the service creation resource fragment: ('http' is already in use)
+          ports:
+          - containerPort: ${servicePort}
+            name: http2
+            protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/
+              port: ${servicePort}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/
+              port: ${servicePort}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
